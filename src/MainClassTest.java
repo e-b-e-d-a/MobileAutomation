@@ -4,10 +4,8 @@ import org.junit.Test;
 public class MainClassTest extends MainClass{
 
     @Test
-    public void testGetClassNumber(){
-        int expected = 45;
-        Assert.assertTrue("getClassNumber is less, than " + expected + "!",
-                getClassNumber() >= expected);
+    public void testGetClassString(){
+        Assert.assertTrue ("Отсутствует слово \"Hello\" в методе getClassString()",
+                getClassString() == "Hello, world"|| getClassString() == "hello, world");
+        }
     }
-
-}
