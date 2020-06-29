@@ -12,6 +12,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
 
+import static org.openqa.selenium.By.xpath;
+
 public class FirstTest {
 
     private AppiumDriver driver;
@@ -36,33 +38,57 @@ public class FirstTest {
     }
 
     @Test
-    public void assertTextIsExist(){
+    public void findCollectionsArticle() throws InterruptedException {
         waitForElementAndClick(
-                By.xpath("//*[contains(@text,'SKIP')]"),
+                xpath("//*[contains(@text,'SKIP')]"),
                 "Не могу найти кнопку Skip",
                 5
         );
         waitForElementAndClick(
-                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                xpath("//*[contains(@text,'Search Wikipedia')]"),
                 "Не могу найти поле для ввода запроса",
                 5
         );
-        WebElement search_line = waitForElementPresent(
-           By.xpath("//*[@class='android.widget.EditText']"),
-           "Не найдена строка поиска",
-           15
+        waitForElementAndSendKeys(
+                xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Doom Patrol",
+                "Cannot find input",
+                5
+        );
+        WebElement element = waitForElementPresent(
+                xpath( "//*[@index='1']"),
+                "Не найдено больше одного результата",
+                15
+        );
+        waitForElementAndClear(
+                xpath("//*[contains(@text,'Doom Patrol')]"),
+                "Строка поиска не очищена",
+                5
+        );
+        WebElement add_language_button = waitForElementPresent(
+                By.xpath("//*[@resource-id='org.wikipedia:id/add_languages_button']"),
+                "Cannot find add button",
+                15
         );
 
-        String search_line_text = search_line.getText();
+        String add_button_text = add_language_button.getText();
+
         Assert.assertEquals(
-                "Текст не совпадает",
-                "Search Wikipedia",
-                search_line_text);
+                "Не найден текст",
+                "ADD WIKIPEDIA LANGUAGES",
+                add_button_text
+        );
     }
 
     private WebElement waitForElementAndClick(By by, String error, long timeoutInSeconds){
         WebElement element = waitForElementPresent(by, error, timeoutInSeconds);
         element.click();
+        return element;
+    }
+
+    private WebElement waitForElementAndClear(By by, String error, long timeoutInSeconds){
+        WebElement element = waitForElementPresent(by, error, timeoutInSeconds);
+        element.clear();
         return element;
     }
 
@@ -72,6 +98,12 @@ public class FirstTest {
         return wait.until(
                 ExpectedConditions.presenceOfElementLocated(by)
         );
+    }
+
+    private WebElement waitForElementAndSendKeys(By by, String value, String error, long timeoutInSeconds){
+        WebElement element = waitForElementPresent(by, error, timeoutInSeconds);
+        element.sendKeys(value);
+        return element;
     }
 
 }
