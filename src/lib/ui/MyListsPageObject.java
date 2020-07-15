@@ -1,12 +1,15 @@
 package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
+import lib.Platform;
 
-public class MyListsPageObject extends MainPageObject {
+abstract public class MyListsPageObject extends MainPageObject {
 
-    public static final String
-            FOLDER_BV_NAME_TPL = "xpath://*[@text = '{FOLDER_NAME}']",
-            ARTICLE_BY_TITLE_TPL = "xpath://*[@text = '{TITLE}']";
+    protected static String
+            FOLDER_BV_NAME_TPL,
+            QUESTION_WINDOW_SYNC_SAVE_BUTTON,
+            ARTICLE_BY_TITLE_TPL;
+
 
 
     private static String getFolderXpathByName(String name_of_folder) {
@@ -30,14 +33,12 @@ public class MyListsPageObject extends MainPageObject {
         );
     }
 
-    public void waitForArticleToAppearByTitle(String article_title)
-    {
+    public void waitForArticleToAppearByTitle(String article_title) {
         String article_xpath = getFolderXpathByName(article_title);
         this.waitForElementPresent(article_xpath, "CAnnot find saved article by title " + article_title, 15);
     }
 
-    public void waitForArticleToDisappiearByTitle(String article_title)
-    {
+    public void waitForArticleToDisappiearByTitle(String article_title) {
         String article_xpath = getFolderXpathByName(article_title);
         this.waitForElementNotPresent(article_xpath, "Saved article still present with title " + article_title, 15);
     }
@@ -49,22 +50,33 @@ public class MyListsPageObject extends MainPageObject {
                 article_xpath,
                 "Cannot find save article"
         );
+        if (Platform.getInstance().isIOS()){
+            this.clickElementToTheRightUpperCorner(article_xpath, "Cannot find saved article");
+        }
         this.waitForArticleToDisappiearByTitle(article_title);
     }
-    public void assertThereIsNoArticleWithsThatTitle(String article_title)
-    {
+
+    public void assertThereIsNoArticleWithsThatTitle(String article_title) {
         String article_xpath = getSaveArticleXpathByTitle(article_title);
         this.assertElementNotPresent(article_xpath, "We've found deleted article title in the My List");
     }
 
-    public void waitForTitleArticleAndOpenIt(String article_title)
+    public void closeQuestionWindowSyncSaved()
     {
+        this.waitForElementAndClick(
+               QUESTION_WINDOW_SYNC_SAVE_BUTTON,
+                "Cannot find 'x' button to close 'sync your saved articles' window",
+                5);
+    }
+
+    public void waitForTitleArticleAndOpenIt(String article_title) {
         String article_xpath = getSaveArticleXpathByTitle(article_title);
         this.waitForElementAndClick(
                 article_xpath,
                 "Cannot open article with title " + article_title,
                 5
         );
+
     }
 
 }

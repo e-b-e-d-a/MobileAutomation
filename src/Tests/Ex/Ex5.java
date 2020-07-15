@@ -1,7 +1,6 @@
-package Tests;
+package Tests.Ex;
 
 import lib.CoreTestCase;
-import lib.Platform;
 import lib.ui.ArticlePageObject;
 import lib.ui.MyListsPageObject;
 import lib.ui.NavigationUI;
@@ -12,12 +11,11 @@ import lib.ui.factories.NavigationUIFactory;
 import lib.ui.factories.SearchPageObjectFactory;
 import org.junit.Test;
 
-public class MyListsTest extends CoreTestCase {
+public class Ex5 extends CoreTestCase {
 
-    private static final String name_of_folder = "Learning programming";
 
     @Test
-    public void testSaveFistArticleToMyList() {
+    public void testSaveTwoArticleToMyListAndOneDelete() {
 
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
 
@@ -27,24 +25,30 @@ public class MyListsTest extends CoreTestCase {
 
         ArticlePageObject ArticlePageObject = ArticlePageObjectFactory.get(driver);
         ArticlePageObject.waitForTitleElement();
-        String article_title = ArticlePageObject.getArticleTitle();
-
-        if (Platform.getInstance().isAndroid()) {
-            ArticlePageObject.addArticleToMyList(name_of_folder);
-        } else {
-            ArticlePageObject.addArticlesToMySaved();
-        }
+        String first_article_title = ArticlePageObject.getArticleTitle();
+        String name_of_folder = "My Test Lists";
         ArticlePageObject.addArticleToMyList(name_of_folder);
+
+        String second_article_title = "Java";
+        ArticlePageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("JavaScript");
+        SearchPageObject.clickByArticleWithSubstring(second_article_title);
+        ArticlePageObject.addArticleToMyCreatedList(name_of_folder);
         ArticlePageObject.closeArticle();
 
         NavigationUI NavigationUI = NavigationUIFactory.get(driver);
         NavigationUI.clickMyLists();
 
         MyListsPageObject MyListsPageObject = MyListsPageObjectFactory.get(driver);
-        if (Platform.getInstance().isAndroid()){
-            MyListsPageObject.openFolderByName(name_of_folder);
-        }
-        MyListsPageObject.swipeByArticleToDelete(article_title);
+        MyListsPageObject.openFolderByName(name_of_folder);
+        MyListsPageObject.swipeByArticleToDelete(first_article_title);
+        MyListsPageObject.assertThereIsNoArticleWithsThatTitle(first_article_title);
+        MyListsPageObject.waitForTitleArticleAndOpenIt(second_article_title);
 
+        assertEquals(
+                "Cannot find title of remaining article",
+                ArticlePageObject.getArticleTitle(), second_article_title);
     }
+
+
 }
